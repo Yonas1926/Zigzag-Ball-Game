@@ -47,6 +47,7 @@ class Background(Window):
 
 
 class Objects(object):
+    img = []
     def __init__(self, x, y, width, height):
         self.x = x
         self.y = y
@@ -55,15 +56,10 @@ class Objects(object):
         self.hit_area = (x, y, width, height)
         self.count = 0
 
-
-class Bomb_Obstacle(Objects):
-    img = pygame.transform.scale(pygame.image.load("images/bomb.jpg"), (50, 50))
-
     def draw(self, win):
         self.hit_area = (self.x, self.y, self.width, self.height)
-        win.blit(self.img, (self.x, self.y))
-        self.count += 1
-        pygame.draw.rect(win, (255, 0, 0), self.hit_area, 2)
+        win.blit(self.img[0], (self.x, self.y))
+        # pygame.draw.rect(win, (255, 0, 0), self.hit_area, 2)
 
     def collide(self, hit_area_of_circle):
         if hit_area_of_circle[0][1] + 15 >= self.hit_area[1] and hit_area_of_circle[0][1] - 15 <= self.hit_area[1]:
@@ -84,41 +80,26 @@ class Bomb_Obstacle(Objects):
         return False
 
 
+class Bomb_Obstacle(Objects):
+    img = [pygame.transform.scale(pygame.image.load("images/bomb.jpg"), (50, 50))]
+
+
 class MScore_Obstacle(Objects):
     img = [pygame.transform.scale(pygame.image.load("images/less_obstacle.jpg"), (50, 50))]
 
-    def draw(self, win):
-        self.hit_area = (self.x, self.y, self.width, self.height)
-        win.blit(self.img[0], (self.x, self.y))
-        pygame.draw.rect(win, (255, 0, 0), self.hit_area, 2)
 
-    def collide(self, hit_area_of_circle):
-        if hit_area_of_circle[0][1] + 17 >= self.hit_area[1] and hit_area_of_circle[0][1] - 17 <= self.hit_area[1]:
-            if hit_area_of_circle[0][0] - 17 <= self.hit_area[0] + 50 and hit_area_of_circle[0][0] + 17 >= \
-                    self.hit_area[0]:
-                return True
-        if hit_area_of_circle[0][1] + 17 >= self.hit_area[1] + 50 and hit_area_of_circle[0][1] - 17 <= self.hit_area[
-            1] + 50:
-            if hit_area_of_circle[0][0] - 17 <= self.hit_area[0] + 50 and hit_area_of_circle[0][0] + 17 >= \
-                    self.hit_area[0]:
-                return True
-        if hit_area_of_circle[0][0] + 17 >= self.hit_area[0] and hit_area_of_circle[0][0] - 17 <= self.hit_area[0]:
-            if hit_area_of_circle[0][1] - 17 <= self.hit_area[1] + 50 and hit_area_of_circle[0][1] + 17 >= \
-                    self.hit_area[1]:
-                return True
-        if hit_area_of_circle[0][0] + 17 >= self.hit_area[0] + 50 and hit_area_of_circle[0][0] - 17 <= \
-                    self.hit_area[0] + 50:
-                if hit_area_of_circle[0][1] - 17 <= self.hit_area[1] + 50 and hit_area_of_circle[0][1] + 17 >= \
-                        self.hit_area[1]:
-                    return True
-        return False
+class P_Power_UP(Objects):
+    img = [pygame.transform.scale(pygame.image.load("images/pause_PU.png"), (50, 50))]
 
 
-class P_Power_UP(Bomb_Obstacle):
-    img = [pygame.transform.scale(pygame.image.load("images/less_obstacle.jpg"), (50, 50))]
+class SM_Power_UP(Objects):
+    img = [pygame.transform.scale(pygame.image.load("images/x2_PU.png"), (50, 50))]
 
-    def draw(self, win):
-        self.hit_area = (self.x, self.y, self.width, self.height)
-        win.blit(self.img[0], (self.x, self.y))
-        pygame.draw.rect(win, (255, 0, 0), self.hit_area, 2)
+
+class Lightning(Objects):
+    img = [pygame.transform.scale(pygame.image.load("images/speed_PU.jpg"), (50, 50))]
+
+
+class Slow_Down_Obstacle(Objects):
+    img = [pygame.transform.scale(pygame.image.load("images/slow.jpg"), (50, 50))]
 
