@@ -46,9 +46,7 @@ class Background(Window):
         self.line3_end_position = (self.line2_x_position, self.line3_y_position)
 
 
-class Obstacle(object):
-    img = [pygame.transform.scale(pygame.image.load("images/bg2.jpg"), (50, 50)), pygame.transform.scale(pygame.image.load("images/bg2.jpg"), (50, 50))]
-
+class Objects(object):
     def __init__(self, x, y, width, height):
         self.x = x
         self.y = y
@@ -57,36 +55,37 @@ class Obstacle(object):
         self.hit_area = (x, y, width, height)
         self.count = 0
 
+
+class Bomb_Obstacle(Objects):
+    img = pygame.transform.scale(pygame.image.load("images/bomb.jpg"), (50, 50))
+
     def draw(self, win):
         self.hit_area = (self.x, self.y, self.width, self.height)
-        if self.count >= 4:
-            self.count = 0
-        win.blit(self.img[self.count//2], (self.x, self.y))
+        win.blit(self.img, (self.x, self.y))
         self.count += 1
         pygame.draw.rect(win, (255, 0, 0), self.hit_area, 2)
 
     def collide(self, hit_area_of_circle):
-        if hit_area_of_circle[0][1] + 17 >= self.hit_area[1] and hit_area_of_circle[0][1] - 17 <= self.hit_area[1]:
-            if hit_area_of_circle[0][0] - 17 <= self.hit_area[0] + 50 and hit_area_of_circle[0][0] + 17 >= self.hit_area[0]:
+        if hit_area_of_circle[0][1] + 15 >= self.hit_area[1] and hit_area_of_circle[0][1] - 15 <= self.hit_area[1]:
+            if hit_area_of_circle[0][0] - 15 <= self.hit_area[0] + 50 and hit_area_of_circle[0][0] + 15 >= self.hit_area[0]:
                 return True
-        if hit_area_of_circle[0][1] + 17 >= self.hit_area[1] + 50 and hit_area_of_circle[0][1] - 17 <= self.hit_area[1] + 50:
-                if hit_area_of_circle[0][0] - 17 <= self.hit_area[0] + 50 and hit_area_of_circle[0][0] + 17 >= self.hit_area[0]:
+        if hit_area_of_circle[0][1] + 15 >= self.hit_area[1] + 50 and hit_area_of_circle[0][1] - 15 <= self.hit_area[1] + 50:
+                if hit_area_of_circle[0][0] - 15 <= self.hit_area[0] + 50 and hit_area_of_circle[0][0] + 15 >= self.hit_area[0]:
                     return True
-        if hit_area_of_circle[0][0] + 17 >= self.hit_area[0] and hit_area_of_circle[0][0] - 17 <= self.hit_area[0]:
-            if hit_area_of_circle[0][1] - 17 <= self.hit_area[1] + 50 and hit_area_of_circle[0][1] + 17 >= \
+        if hit_area_of_circle[0][0] + 15 >= self.hit_area[0] and hit_area_of_circle[0][0] - 15 <= self.hit_area[0]:
+            if hit_area_of_circle[0][1] - 15 <= self.hit_area[1] + 50 and hit_area_of_circle[0][1] + 15 >= \
                     self.hit_area[1]:
                 return True
-        if hit_area_of_circle[0][0] + 17 >= self.hit_area[0] + 50 and hit_area_of_circle[0][0] - 17 <= \
+        if hit_area_of_circle[0][0] + 15 >= self.hit_area[0] + 50 and hit_area_of_circle[0][0] - 15 <= \
                     self.hit_area[0] + 50:
-                if hit_area_of_circle[0][1] - 17 <= self.hit_area[1] + 50 and hit_area_of_circle[0][1] + 17 >= \
+                if hit_area_of_circle[0][1] - 15 <= self.hit_area[1] + 50 and hit_area_of_circle[0][1] + 15 >= \
                         self.hit_area[1]:
                     return True
         return False
 
 
-
-class Obstacle2(Obstacle):
-    img = [pygame.transform.scale(pygame.image.load("images/bg4.jpg"), (50, 50))]
+class MScore_Obstacle(Objects):
+    img = [pygame.transform.scale(pygame.image.load("images/less_obstacle.jpg"), (50, 50))]
 
     def draw(self, win):
         self.hit_area = (self.x, self.y, self.width, self.height)
@@ -113,3 +112,13 @@ class Obstacle2(Obstacle):
                         self.hit_area[1]:
                     return True
         return False
+
+
+class P_Power_UP(Bomb_Obstacle):
+    img = [pygame.transform.scale(pygame.image.load("images/less_obstacle.jpg"), (50, 50))]
+
+    def draw(self, win):
+        self.hit_area = (self.x, self.y, self.width, self.height)
+        win.blit(self.img[0], (self.x, self.y))
+        pygame.draw.rect(win, (255, 0, 0), self.hit_area, 2)
+

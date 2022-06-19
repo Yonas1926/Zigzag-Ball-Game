@@ -7,15 +7,23 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from Classes import *
 
-pygame.init()
-background = Background()
-display = (background.display_x, background.display_y)
 
-win = pygame.display.set_mode(display)
-pygame.display.set_caption("Zizag Ball Game")
-
-background_Image = pygame.image.load("images/bg1.jpg")
-background_Img = pygame.transform.scale(background_Image, (500, 500))
+def initialize_game():
+    global background, display, win, background_Img, obstacles, best_score, start, score, ball1
+    pygame.init()
+    background = Background()
+    display = (background.display_x, background.display_y)
+    win = pygame.display.set_mode(display)
+    pygame.display.set_caption("Zizag Ball Game")
+    background_Image = pygame.image.load("images/bg1.jpg")
+    background_Img = pygame.transform.scale(background_Image, (500, 500))
+    pygame.time.set_timer(USEREVENT + 1, random.randrange(1000, 2000))
+    obstacles = []
+    best_score = 0
+    start = time.time()
+    score = 0
+    MScore = 0
+    ball1 = Ball()
 
 
 def init():
@@ -42,9 +50,6 @@ def draw_grid():
     glFlush()
 
 
-ball1 = Ball()
-
-
 def draw_game():
 
     win.fill((255, 255, 255))
@@ -68,8 +73,8 @@ def draw_game():
 def gameOverScreen():
     global obstacles, score, best_score, start
     obstacles = []
-
     run = True
+
     while run:
         for this_event in pygame.event.get():
             if this_event.type == pygame.QUIT:
@@ -91,21 +96,18 @@ def gameOverScreen():
     score = 0
 
 
-def generateObstacle():
-    obstacle1 = Obstacle(random.randrange(110, 340), -50, 50, 50)
-    obstacle2 = Obstacle2(random.randrange(110, 340), -50, 50, 50)
-    obstacle_list = [obstacle1, obstacle2]
-    rand_obstacle_index = random.randrange(0, len(obstacle_list))
-    obstacles.append(obstacle_list[rand_obstacle_index])
+def generateObjects():
+    rand_place = (random.randrange(110, 340), -50, 50, 50)
 
+    bomb_Obstacle = Bomb_Obstacle(rand_place[0], rand_place[1], rand_place[2], rand_place[3])
+    minimize_Score_Obstacle = MScore_Obstacle(rand_place[0], rand_place[1], rand_place[2], rand_place[3])
 
+    Pause_Power_Up = P_Power_UP(rand_place[0], rand_place[1], rand_place[2], rand_place[3])
+    # Score_Multiplier = SM_Power_UP(rand_place[0], rand_place[1], rand_place[2], rand_place[3])
 
-pygame.time.set_timer(USEREVENT+1, random.randrange(1000, 2000))
-
-obstacles = []
-best_score = 0
-start = time.time()
-score = 0
+    objects_list = [bomb_Obstacle, minimize_Score_Obstacle]
+    rand_object_index = random.randrange(0, len(objects_list))
+    obstacles.append(objects_list[rand_object_index])
 
 
 def key_functionality():
@@ -133,32 +135,50 @@ def key_functionality():
 
 
 def motion_of_obstacles_and_check_collision():
+    global start, MScore
     difficulty = 1 + (score / 5)
 
     for obstacle in obstacles:
-        if obstacle.collide(ball1.hit_area):
-            pygame.time.delay(1000)
-            gameOverScreen()
         obstacle.y += difficulty
         if obstacle.y < obstacle.height * -1:
             obstacles.pop(obstacles.index(obstacle))
+        # For the Bomb Obstacle
+        if isinstance(obstacle, Bomb_Obstacle):
+            if obstacle.collide(ball1.hit_area):
+                pygame.time.delay(1000)
+                gameOverScreen()
+        # For the Minimize Score Obstacle
+        if isinstance(obstacle, MScore_Obstacle):
+            if obstacle.collide(ball1.hit_area):
+                print("Collided with MScore")
+                obstacles.pop(obstacles.index(obstacle))
+                if score > 5:
+                    MScore += 5
 
 
-while True:
-    score = int(time.time() - start)
+def main():
+    global score, MScore
+    MScore = 0
+    initialize_game()
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == USEREVENT + 1:
+                generateObjects()
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            quit()
-        if event.type == USEREVENT+1:
-            generateObstacle()
-
-    draw_game()
-    key_functionality()
-    motion_of_obstacles_and_check_collision()
-    pygame.display.flip()
-    pygame.time.wait(10)
+        draw_game()
+        key_functionality()
+        motion_of_obstacles_and_check_collision()
+        calc_Score(MScore)
+        pygame.display.flip()
+        pygame.time.wait(10)
 
 
-# main()
+def calc_Score(MScore):
+    global score
+    score = int(time.time() - start) - MScore
+
+
+main()
